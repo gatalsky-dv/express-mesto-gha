@@ -7,9 +7,23 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUser = (req, res) => {
-  User.findById(req.user._id)
+  User.findById(req.params.userId)
     .then(user => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res
+          .status(400)
+          .send({
+            message: 'Переданы некорректные данные',
+          });
+      }
+      if (err.statusCode === 404) {
+        return res.status(404).send({
+          message: 'err.message'
+        });
+      }
+      return res.status(500).send({ message: 'Произошла ошибка' });
+    });
 };
 
 module.exports.createUser = (req, res) => {
@@ -20,7 +34,7 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданны некорректные данные' });
       }
-      res.status(500).send({ message: 'Произошла ошибка' })
+      return res.status(500).send({ message: 'Произошла ошибка' })
     });
 };
 
@@ -35,7 +49,10 @@ module.exports.updateUser = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданны некорректные данные' });
       }
-      res.status(500).send({ message: 'Произошла ошибка' })
+      if (err.statusCode === 404) {
+        return res.status(404).send({ message: err.message });
+      }
+      return res.status(500).send({ message: 'Произошла ошибка' })
     });
   };
 
@@ -46,5 +63,13 @@ module.exports.updateAvatar = (req, res) => {
     { new: true, runValidators: true, }
   )
     .then(user => res.send({ data: user }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
-  };
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Переданны некорректные данные' });
+      }
+      if (err.statusCode === 404) {
+        return res.status(404).send({ message: err.message });
+      }
+      return res.status(500).send({ message: 'Произошла ошибка' });
+    });
+};
