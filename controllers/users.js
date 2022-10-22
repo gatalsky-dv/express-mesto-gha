@@ -10,7 +10,7 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
-    .orFail(() => { throw new NotFound('Пользователь не найден') })
+    .orFail(() => { throw new NotFound('Пользователь не найден'); })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -26,12 +26,12 @@ module.exports.getUser = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then(user => res.send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(ERR_400).send({ message: 'Переданны некорректные данные' });
       }
-      return res.status(ERR_500).send({ message: 'Произошла ошибка' })
+      return res.status(ERR_500).send({ message: 'Произошла ошибка' });
     });
 };
 
@@ -39,10 +39,10 @@ module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id,
     { name, about },
-    { new: true, runValidators: true, }
+    { new: true, runValidators: true },
   )
     .orFail(() => { throw new NotFound('Пользователь не найден') })
-    .then(user => res.send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(ERR_400).send({ message: 'Переданны некорректные данные' });
@@ -50,18 +50,18 @@ module.exports.updateUser = (req, res) => {
       if (err.statusCode === ERR_404) {
         return res.status(ERR_404).send({ message: 'Данные не найдены' });
       }
-      return res.status(ERR_500).send({ message: 'Произошла ошибка' })
+      return res.status(ERR_500).send({ message: 'Произошла ошибка' });
     });
-  };
+};
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id,
     { avatar },
-    { new: true, runValidators: true, }
+    { new: true, runValidators: true },
   )
-    .orFail(() => { throw new NotFound('Пользователь не найден') })
-    .then(user => res.send({ data: user }))
+    .orFail(() => { throw new NotFound('Пользователь не найден'); })
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(ERR_400).send({ message: 'Переданны некорректные данные' });

@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '6353bd12cfb13587a708ea4e' // вставьте сюда _id созданного в предыдущем пункте пользователя
+    _id: '6353bd12cfb13587a708ea4e',
   };
   next();
 });
@@ -29,5 +29,5 @@ app.use('/*', (req, res) => {
 
 app.listen(PORT, () => {
   // Если всё работает, консоль покажет, какой порт приложение слушает
-  console.log(`App listening on port ${PORT}`)
+  console.log(`App listening on port ${PORT}`);
 });
