@@ -11,16 +11,10 @@ module.exports.getUser = (req, res) => {
     .then(user => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res
-          .status(400)
-          .send({
-            message: 'Переданы некорректные данные',
-          });
+        return res.status(400).send({ message: 'Переданы некорректные данные' });
       }
       if (err.statusCode === 404) {
-        return res.status(404).send({
-          message: 'err.message'
-        });
+        return res.status(404).send({ message: 'Данные не найдены' });
       }
       return res.status(500).send({ message: 'Произошла ошибка' });
     });
@@ -50,7 +44,7 @@ module.exports.updateUser = (req, res) => {
         return res.status(400).send({ message: 'Переданны некорректные данные' });
       }
       if (err.statusCode === 404) {
-        return res.status(404).send({ message: err.message });
+        return res.status(404).send({ message: 'Данные не найдены' });
       }
       return res.status(500).send({ message: 'Произошла ошибка' })
     });
@@ -68,7 +62,7 @@ module.exports.updateAvatar = (req, res) => {
         return res.status(400).send({ message: 'Переданны некорректные данные' });
       }
       if (err.statusCode === 404) {
-        return res.status(404).send({ message: err.message });
+        return res.status(404).send({ message: 'Данные не найдены' });
       }
       return res.status(500).send({ message: 'Произошла ошибка' });
     });
