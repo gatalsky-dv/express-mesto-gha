@@ -7,7 +7,7 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUser = (req, res) => {
-  User.findById(req.params.userId)
+  User.findById(req.params.id)
     .then(user => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
