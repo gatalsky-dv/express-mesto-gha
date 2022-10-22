@@ -7,10 +7,7 @@ module.exports.getCards = (req, res) => {
 };
 
 module.exports.createCard = (req, res) => {
-  console.log(req.user._id); // _id станет доступен
-};
-
-module.exports.createCard = (req, res) => {
+  const { name, link } = req.body;
   Card.create({ name, link })
     .then(card => res.send({ data: card }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
