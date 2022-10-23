@@ -37,11 +37,12 @@ module.exports.deleteCard = (req, res) => {
 };
 
 module.exports.putLike = (req, res) => {
-  Card.findByIdAndUpdate(req.params.cardId,
+  Card.findByIdAndUpdate(
+    req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-    .orFail(() => { throw new NotFound('Карточка не найдена') })
+    .orFail(() => { throw new NotFound('Карточка не найдена'); })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -55,11 +56,12 @@ module.exports.putLike = (req, res) => {
 };
 
 module.exports.deleteLike = (req, res) => {
-  Card.findByIdAndUpdate(req.params.cardId,
+  Card.findByIdAndUpdate(
+    req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .orFail(() => { throw new NotFound('Карточка не найдена') })
+    .orFail(() => { throw new NotFound('Карточка не найдена'); })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -70,4 +72,4 @@ module.exports.deleteLike = (req, res) => {
       }
       return res.status(ERR_500).send({ message: 'Произошла ошибка' });
     });
-}
+};
