@@ -1,8 +1,10 @@
-const User = require('../models/user');
-const NotFound = require('../errors/NotFound');
-const { ERR_500, ERR_400, ERR_401, ERR_404 } = require('../errors/errorСodes');
 const bcrypt = require('bcryptjs'); // импортируем bcrypt
 const jwt = require('jsonwebtoken');
+const User = require('../models/user');
+const NotFound = require('../errors/NotFound');
+const {
+  ERR_500, ERR_400, ERR_401, ERR_404,
+} = require('../errors/errorСodes');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -26,14 +28,20 @@ module.exports.getUser = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  const { email, password, name, about, avatar } = req.body;
-  bcrypt.hash(req.body.password, 10)
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
+  bcrypt.hash(password, 10)
     .then((hash) => User.create({
-      email,
-      password: hash,
       name,
       about,
       avatar,
+      email,
+      password: hash,
     }))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
