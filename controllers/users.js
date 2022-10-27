@@ -26,8 +26,12 @@ module.exports.getUser = (req, res, next) => {
 
 module.exports.getUserMe = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(() => { throw new NotFound('Пользователь не найден'); })
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (!user._id) {
+        throw new NotFound('Пользователь не найден');
+      }
+      res.send({ data: user });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));
