@@ -1,11 +1,11 @@
 const jwt = require('jsonwebtoken');
-const { ERR_401 } = require('../errors/errorСodes');
+const Unauthorized = require('../errors/Unauthorized');
 
 // eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return res.status(ERR_401).send({ message: 'Необходима авторизация' });
+    return next(new Unauthorized('Необходима авторизация'));
   }
   const token = authorization.replace('Bearer ', '');
   let payload;
@@ -13,8 +13,8 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, 'some-secret-key');
   } catch (err) {
-    return res.status(ERR_401).send({ message: 'Необходима авторизация' });
+    return next(new Unauthorized('Необходима авторизация'));
   }
   req.user = payload; // записываем пейлоуд в объект запроса
-  next(); // пропускаем запрос дальше
+  return next(); // пропускаем запрос дальше
 };

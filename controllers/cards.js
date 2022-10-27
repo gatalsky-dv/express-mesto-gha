@@ -1,75 +1,89 @@
 const Card = require('../models/card');
 const NotFound = require('../errors/NotFound');
-const { ERR_500, ERR_404, ERR_400 } = require('../errors/errorСodes');
+const BadRequest = require('../errors/BadRequest');
+const Forbidden = require('../errors/Forbidden');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(ERR_500).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const ownerId = req.user._id;
   Card.create({ name, link, owner: ownerId })
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (!card) {
+        next(new BadRequest('Переданны некорректные данные'));
+      }
+      res.send({ data: card });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERR_400).send({ message: 'Переданны некорректные данные' });
+        next(new BadRequest('Переданны некорректные данные'));
       }
-      return res.status(ERR_500).send({ message: 'Произошла ошибка' });
+      next(err);
     });
 };
 
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .orFail(() => { throw new NotFound('Карточка не найдена'); })
-    .then((card) => res.send({ data: card }))
+module.exports.deleteCard = (req, res, next) => {
+  const { _id: userId } = req.user;
+  Card.findById(req.params.cardId)
+    .orFail(() => new NotFound('Карточка не найдена'))
+    .then((card) => {
+      if (card.owner.toString() === userId) {
+        res.send({ data: Card.findByIdAndDelete(req.params.cardId) });
+      } else {
+        throw new Forbidden('Запрещено удалять');
+      }
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(ERR_400).send({ message: 'Переданны некорректные данные' });
+        next(new BadRequest('Переданны некорректные данные'));
       }
-      if (err.statusCode === ERR_404) {
-        return res.status(ERR_404).send({ message: 'Данные не найдены' });
-      }
-      return res.status(ERR_500).send({ message: 'Произошла ошибка' });
+      next(err);
     });
 };
 
-module.exports.putLike = (req, res) => {
+module.exports.putLike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
     .orFail(() => { throw new NotFound('Карточка не найдена'); })
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (!card) {
+        next(new NotFound('Карточка не найдена'));
+      }
+      res.send({ data: card });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(ERR_400).send({ message: 'Переданны некорректные данные' });
+        next(new BadRequest('Переданны некорректные данные'));
       }
-      if (err.statusCode === ERR_404) {
-        return res.status(ERR_404).send({ message: 'Карточка не найдена' });
-      }
-      return res.status(ERR_500).send({ message: 'Произошла ошибка' });
+      next(err);
     });
 };
 
-module.exports.deleteLike = (req, res) => {
+module.exports.deleteLike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
     .orFail(() => { throw new NotFound('Карточка не найдена'); })
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (!card) {
+        next(new NotFound('Карточка не найдена'));
+      }
+      res.send({ data: card });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(ERR_400).send({ message: 'Переданны некорректные данные' });
+        next(new BadRequest('Переданны некорректные данные'));
       }
-      if (err.statusCode === ERR_404) {
-        return res.status(ERR_404).send({ message: 'Карточка не найдена' });
-      }
-      return res.status(ERR_500).send({ message: 'Произошла ошибка' });
+      next(err);
     });
 };
