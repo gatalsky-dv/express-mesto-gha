@@ -7,14 +7,14 @@ const Conflict = require('../errors/Conflict');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.send(users))
     .catch(next);
 };
 
 module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => { throw new NotFound('Пользователь не найден'); })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -30,7 +30,7 @@ module.exports.getUserMe = (req, res, next) => {
       if (!user._id) {
         throw new NotFound('Пользователь не найден');
       }
-      res.send({ data: user });
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -83,7 +83,7 @@ module.exports.updateUser = (req, res, next) => {
     { name, about },
     { new: true, runValidators: true },
   )
-    .orFail(() => { throw new NotFound('Пользователь не найден'); })
+    .orFail(() => { throw new BadRequest('Переданны некорректные данные'); })
     .then((user) => {
       if (!user) {
         throw new BadRequest('Переданны некорректные данные');
@@ -106,7 +106,7 @@ module.exports.updateAvatar = (req, res, next) => {
     { avatar },
     { new: true, runValidators: true },
   )
-    .orFail(() => { throw new NotFound('Пользователь не найден'); })
+    .orFail(() => { throw new BadRequest('Переданны некорректные данные'); })
     .then((user) => {
       if (!user) {
         throw new BadRequest('Переданны некорректные данные');
@@ -127,7 +127,7 @@ module.exports.login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      res.send({ data: token });
+      res.send(token);
     })
     .catch(next);
 };

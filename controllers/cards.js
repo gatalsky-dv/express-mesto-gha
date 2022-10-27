@@ -5,7 +5,7 @@ const Forbidden = require('../errors/Forbidden');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.send(cards))
     .catch(next);
 };
 
@@ -17,7 +17,7 @@ module.exports.createCard = (req, res, next) => {
       if (!card) {
         next(new BadRequest('Переданны некорректные данные'));
       }
-      res.send({ data: card });
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -33,7 +33,9 @@ module.exports.deleteCard = (req, res, next) => {
     .orFail(() => new NotFound('Карточка не найдена'))
     .then((card) => {
       if (card.owner.toString() === userId) {
-        res.send({ data: Card.findByIdAndDelete(req.params.cardId) });
+        card.delete()
+          .then(() => res.send({ message: 'Успех' }))
+          .catch(next);
       } else {
         throw new Forbidden('Запрещено удалять');
       }
@@ -41,6 +43,7 @@ module.exports.deleteCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданны некорректные данные'));
+        return;
       }
       next(err);
     });
@@ -56,8 +59,9 @@ module.exports.putLike = (req, res, next) => {
     .then((card) => {
       if (!card) {
         next(new NotFound('Карточка не найдена'));
+        return;
       }
-      res.send({ data: card });
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -77,12 +81,14 @@ module.exports.deleteLike = (req, res, next) => {
     .then((card) => {
       if (!card) {
         next(new NotFound('Карточка не найдена'));
+        return;
       }
-      res.send({ data: card });
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданны некорректные данные'));
+        return;
       }
       next(err);
     });
