@@ -32,7 +32,7 @@ app.use((err, req, res, next) => {
   const { statusCode = ERR_500, message } = err;
   res
     .status(statusCode)
-    .send({ message: statusCode === ERR_500 ? "На сервере произошла ошибка" : message });
+    .send({ message: statusCode === ERR_500 ? 'На сервере произошла ошибка' : message });
   next();
 });
 
