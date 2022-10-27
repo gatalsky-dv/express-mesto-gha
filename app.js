@@ -1,8 +1,8 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
-
-const { ERR_404 } = require('./errors/errorСodes');
+const { errors } = require('celebrate');
+const { ERR_500 } = require('./errors/errorСodes');
 
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -16,13 +16,6 @@ app.use(bodyParser.urlencoded({
   extended: true,
 }));
 
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '6353bd12cfb13587a708ea4e',
-//   };
-//   next();
-// });
-
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.post('/signin', loginValidation, login);
@@ -33,8 +26,14 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use('/*', (req, res) => {
-  res.status(ERR_404).json({ message: 'Запрашиваемый ресурс не найден' });
+app.use(errors());
+
+app.use((err, req, res, next) => {
+  const { statusCode = ERR_500, message } = err;
+  res
+    .status(statusCode)
+    .send({ message: statusCode === ERR_500 ? "На сервере произошла ошибка" : message });
+  next();
 });
 
 app.listen(PORT);
