@@ -1,4 +1,3 @@
-// require('dotenv').config();
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -7,6 +6,7 @@ const { ERR_404 } = require('./errors/errorСodes');
 
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const { loginValidation, createUserValidation } = require('./middlewares/validation');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -25,8 +25,8 @@ app.use(bodyParser.urlencoded({
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', loginValidation, login);
+app.post('/signup', createUserValidation, createUser);
 
 app.use(auth);
 
