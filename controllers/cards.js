@@ -16,12 +16,14 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         next(new BadRequest('Переданны некорректные данные'));
+        return;
       }
-      res.send(card);
+      res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданны некорректные данные'));
+        return;
       }
       next(err);
     });
@@ -61,11 +63,12 @@ module.exports.putLike = (req, res, next) => {
         next(new NotFound('Карточка не найдена'));
         return;
       }
-      res.send(card);
+      res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданны некорректные данные'));
+        return;
       }
       next(err);
     });
@@ -83,7 +86,7 @@ module.exports.deleteLike = (req, res, next) => {
         next(new NotFound('Карточка не найдена'));
         return;
       }
-      res.send(card);
+      res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
