@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
+const NotFound = require('./errors/NotFound');
 const { ERR_500 } = require('./errors/errorСodes');
 
 const { createUser, login } = require('./controllers/users');
@@ -25,6 +26,10 @@ app.use(auth);
 
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
+
+app.use('/*', (req, res, next) => {
+  next(new NotFound({ message: 'Запрашиваемый ресурс не найден' }));
+});
 
 app.use(errors());
 
