@@ -22,9 +22,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'https://www.meme-arsenal.com/memes/de24d21337ce6ac21b430b2723c5560a.jpg',
     validate: {
-      validator(v) { return regex.test(v) },
+      validator(v) { return regex.test(v); },
       message: 'Невалидная ссылка',
-    };
+    },
   },
   email: {
     type: String,
@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Пароль пользователя'],
     minlength: 8,
     select: false,
-  }
+  },
 });
 
 // eslint-disable-next-line func-names
