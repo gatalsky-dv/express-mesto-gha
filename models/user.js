@@ -10,17 +10,17 @@ const userSchema = new mongoose.Schema({
     type: String, // имя — это строка
     minlength: 2, // минимальная длина имени — 2 символа
     maxlength: 30, // а максимальная — 30 символов
-    default: 'КотЭ',
+    default: 'Жак-Ив Кусто',
   },
   about: {
     type: String,
     minlength: 2,
     maxlength: 30,
-    default: 'Не срал в тапки',
+    default: 'Исследователь',
   },
   avatar: {
     type: String,
-    default: 'https://www.meme-arsenal.com/memes/de24d21337ce6ac21b430b2723c5560a.jpg',
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
       validator(v) { return regex.test(v); },
       message: 'Невалидная ссылка',
