@@ -18,11 +18,11 @@ module.exports.getUser = (req, res, next) => {
     .orFail(() => { throw new NotFound('Пользователь не найден'); })
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequest('Переданы некорректные данные'));
-      } else {
-        next(err);
-      }
+      // if (err.name === 'CastError') {
+      //   next(new BadRequest('Переданы некорректные данные'));
+      // } else {
+      next(err);
+      // }
     });
 };
 
