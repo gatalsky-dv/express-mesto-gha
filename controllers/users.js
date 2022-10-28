@@ -18,20 +18,20 @@ module.exports.getUser = (req, res, next) => {
     .orFail(() => { throw new NotFound('Пользователь не найден'); })
     .then((user) => res.send(user))
     .catch((err) => {
-      // if (err.name === 'CastError') {
-      //   next(new BadRequest('Переданы некорректные данные'));
-      // } else {
-      next(err);
-      // }
+      if (err.name === 'CastError') {
+        next(new BadRequest('Переданы некорректные данные'));
+      } else {
+        next(err);
+      }
     });
 };
 
 module.exports.getUserMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
-      if (!user._id) {
-        throw new NotFound('Пользователь не найден');
-      }
+      // if (!user._id) {
+      //   throw new NotFound('Пользователь не найден');
+      // }
       res.send(user);
     })
     .catch((err) => {
