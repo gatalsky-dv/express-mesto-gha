@@ -8,7 +8,9 @@ const Conflict = require('../errors/Conflict');
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(next);
+    .catch((err) => {
+      next(err);
+    });
 };
 
 module.exports.getUser = (req, res, next) => {
@@ -129,5 +131,7 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.send({ token });
     })
-    .catch(next);
+    .catch((err) => {
+      next(err);
+    });
 };

@@ -4,7 +4,7 @@ const validationURL = (value, helpers) => {
   const regex = /^((ftp|http|https):\/\/)?(www\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9-]*\.?)*\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/;
 
   if (!regex.test(value)) {
-    return helpers.error('Ссылка не не рабочая');
+    return helpers.error('Ссылка не рабочая');
   }
   return value;
 };
