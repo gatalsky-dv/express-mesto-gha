@@ -7,16 +7,14 @@ const Conflict = require('../errors/Conflict');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      next(err);
-    });
+    .then((user) => res.send(user))
+    .catch(next);
 };
 
 module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => { throw new NotFound('Пользователь не найден'); })
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданны некорректные данные'));
@@ -29,33 +27,16 @@ module.exports.getUser = (req, res, next) => {
 module.exports.getUserMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
-      if (user) {
-        res.status(200).send({
-          _id: user._id,
-          name: user.name,
-          about: user.about,
-          avatar: user.avatar,
-          email: user.email,
-        });
-      } else { throw new NotFound('Пользователь не найден'); }
-      // if (!user._id) {
-      //   throw new NotFound('Пользователь не найден');
-      // }
-      // res.send({
-      //   _id: user._id,
-      //   name: user.name,
-      //   about: user.about,
-      //   avatar: user.avatar,
-      //   email: user.email,
-      // });
+      if (!user._id) {
+        throw new NotFound('Пользователь не найден');
+      }
+      res.send(user);
     })
-    // .catch(next);
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new NotFound('Пользователь не найден'));
-      } else {
-        next(err);
+        next(new BadRequest('Переданны некорректные данные'));
       }
+      next(err);
     });
 };
 
@@ -88,9 +69,8 @@ module.exports.createUser = (req, res, next) => {
         next(new BadRequest('Переданны некорректные данные'));
       } else if (err.code === 11000) {
         next(new Conflict('Пользователь с таким email уже зарегистрирован'));
-      } else {
-        next(err);
       }
+      next(err);
     });
 };
 
