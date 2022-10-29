@@ -49,14 +49,14 @@ module.exports.getUserMe = (req, res, next) => {
       //   email: user.email,
       // });
     })
-    .catch(next);
-  // .catch((err) => {
-  //   if (err.name === 'CastError') {
-  //     next(new BadRequest('Переданы некорректные данные'));
-  //   } else {
-  //     next(err);
-  //   }
-  // });
+    // .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new NotFound('Пользователь не найден'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.createUser = (req, res, next) => {
