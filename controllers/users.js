@@ -19,10 +19,10 @@ module.exports.getUser = (req, res, next) => {
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new NotFound('Пользователь не найден'));
-      } else {
-        next(err);
+        next(new BadRequest('Переданны некорректные данные'));
+        return;
       }
+      next(err);
     });
 };
 
