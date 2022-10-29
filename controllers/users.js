@@ -15,8 +15,8 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
-    // .orFail(() => { throw new NotFound('Пользователь не найден'); })
-    .then((user) => res.send({ data: user }))
+    .orFail(() => { throw new NotFound('Пользователь не найден'); })
+    .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -131,7 +131,5 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.send({ token });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
