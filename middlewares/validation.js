@@ -11,7 +11,7 @@ const validationURL = (value, helpers) => {
 
 const getUserValidation = celebrate({
   params: Joi.object().keys({
-    nameId: Joi.string().length(24).hex(),
+    userId: Joi.string().length(24).hex(),
   }),
 });
 
