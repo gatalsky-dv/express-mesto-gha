@@ -7,7 +7,7 @@ const Conflict = require('../errors/Conflict');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((user) => res.send(user))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       next(err);
     });
@@ -16,7 +16,7 @@ module.exports.getUsers = (req, res, next) => {
 module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => { throw new NotFound('Пользователь не найден'); })
-    .then((user) => res.send(user))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));
