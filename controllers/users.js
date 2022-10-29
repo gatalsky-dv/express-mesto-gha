@@ -32,7 +32,13 @@ module.exports.getUserMe = (req, res, next) => {
       if (!user._id) {
         throw new NotFound('Пользователь не найден');
       }
-      res.send(user);
+      res.send({
+        _id: user._id,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
