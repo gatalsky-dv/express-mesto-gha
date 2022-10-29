@@ -37,7 +37,7 @@ module.exports.getUserMe = (req, res, next) => {
           avatar: user.avatar,
           email: user.email,
         });
-      } else { throw new BadRequest('Переданы некорректные данные'); }
+      } else { throw new NotFound('Пользователь не найден'); }
       // if (!user._id) {
       //   throw new NotFound('Пользователь не найден');
       // }
